@@ -17,12 +17,10 @@ data "aws_vpc" "default"{
 default =true
 }
 
-<<<<<<< HEAD
-
 resource "aws_instance" "blog" {
 =======
 resource "aws_instance" "blog" {
->>>>>>> 2800e1b1cd304849cfbc1b020d532e1ec6db524c
+
   ami           = data.aws_ami.app_ami.id
   instance_type = var.instance_type
 
