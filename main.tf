@@ -41,30 +41,3 @@ module "security-group_1" {
   egress_rules       = ["all-all"]
   egress_cidr_blocks =["0.0.0.0/0"]
 }
-
-resource "aws_security_group" "blog"{
-name        = "blog"
-description ="Allow http and https in. Allow everything out"
-
-vpc_id = data.aws_vpc.default.id
-}
-
-resource "aws_security_group" "blog_https_in" {
-  type       = "ingress"
-  from-port  = 443
-  to_port    = 443
-  protocal   = "tcp"
-  cidr_block = ["0.0.0.0/0"]
-
-  security_group_id = aws_security_group.blog.id
-}
-
-resource "aws_security_group" "blog_everything_out" {
-  type       = "egress"
-  from-port  = 0
-  to_port    = 0
-  protocal   = "-1"
-  cidr_block = ["0.0.0.0/0"]
-
-  security_group_id = aws_security_group.blog.id
-}
