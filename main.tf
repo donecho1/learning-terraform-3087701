@@ -1,4 +1,5 @@
-# First module definition (unchanged)
+# Existing module definitions...
+
 module "security-group_1" {
   source = "terraform-aws-modules/vpc/aws"
 
@@ -14,30 +15,33 @@ module "security-group_1" {
   }
 }
 
-# Second module definition with a new name
-module "security-group_2" { # Changed the name here
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.2"
-  name    = "blog_new"
+# Newly added aws_ami data source definition
+data "aws_ami" "app_ami" {
+  most_recent = true
 
-  vpc_id = module.security-group_1.vpc_id # Note: You might need to adjust this if the VPC ID is expected to come from the renamed module
+  filter {
+    name   = "name"
+    values = ["bitnami-tomcat-*-x86_64-hvm-ebs-nami"]
+  }
 
-  ingress_rules       = ["http-80-tcp","https-443-tcp"]
-  ingress_cidr_blocks =["0.0.0.0/0"]
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 
-  egress_rules       = ["all-all"]
-  egress_cidr_blocks =["0.0.0.0/0"]
+  owners = ["979382823631"] # Bitnami
 }
 
-# Adjusted resource block to use the new module name
+# Adjusted resource block to use the newly defined data source
 resource "aws_instance" "blog" {
   ami           = data.aws_ami.app_ami.id
   instance_type = var.instance_type
-  vpc_security_group_ids = [module.security-group_2.security_group_id] # Updated to match the new module name
+  vpc_security_group_ids = [module.security-group_1.security_group_id]
 
-  subnet_id = module.security-group_1.public_subnets[0] # Assuming you want to keep using the first public subnet from the original module
+  subnet_id = module.security-group_1.public_subnets[0]
 
   tags = {
     Name = "Learning Terraform"
   }
 }
+
